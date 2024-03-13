@@ -1,15 +1,19 @@
 import './App.css';
 import { Table, Modal, ModalBody, ModalHeader, FormGroup, ModalFooter  } from 'reactstrap';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
 
 function App() {
-  const [data, setData] = useState([
-    { id: 1, nombre: "Bajo la misma estrella", autor: "John Green" },
-    { id: 2, nombre: "Una paz sólo nuestra", autor: "John Knowles" },
-    { id: 3, nombre: "Inocencia interrumpida", autor: "Susanna Kaysen" },
-    { id: 4, nombre: "Matar a un Ruiseñor", autor: "Harper Lee" },
-    { id: 5, nombre: "Orgullo y prejuicio", autor: "Jane Austen" },
-  ]);
+  const [data, setData] = useState(() => {
+    const savedData = localStorage.getItem('registroData');
+    return savedData ? JSON.parse(savedData) : [
+      { id: 1, nombre: "Bajo la misma estrella", autor: "John Green" },
+      { id: 2, nombre: "Una paz sólo nuestra", autor: "John Knowles" },
+      { id: 3, nombre: "Inocencia interrumpida", autor: "Susanna Kaysen" },
+      { id: 4, nombre: "Matar a un Ruiseñor", autor: "Harper Lee" },
+      { id: 5, nombre: "Orgullo y prejuicio", autor: "Jane Austen" },
+    ];
+  });   
   // estado para el modal de agregar y editar
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -25,7 +29,7 @@ function App() {
    // Función para abrir/cerrar el modal
   const toggleModal = () => setModalOpen(!modalOpen);
 
-  // edición 
+   // edición 
   const handleEdit = (index) => { 
     setEditingIndex(index); // Establece el índice de edición
     const { nombre, autor } = data[index];
@@ -44,7 +48,7 @@ function App() {
       const nuevoId = data.length + 1; // se genera el id automáticamente
       const nuevaEntrada = { id: nuevoId, nombre, autor }; // Crear un nuevo objeto 
       setData([...data, nuevaEntrada]); // Agrega el nuevo valor
-    }
+    } 
     // Reinicia el índice de edición
     setEditingIndex(null); 
     setNombre(''); 
@@ -59,6 +63,9 @@ function App() {
       setData(data.filter((_, i) => i !== index)); 
     }
   };
+  useEffect(() => {
+    localStorage.setItem('registroData', JSON.stringify(data));
+  }, [data]);
 
   return (
     <div className="container">
